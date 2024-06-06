@@ -1,6 +1,7 @@
 import tkinter as tk
 import numpy as np
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 def global_alignment(seq1, seq2, match=1, mismatch=-1, gap=-2):
     print("Processing Global Alignment...")
     print(f"Sequence1: {seq1}")
@@ -137,41 +138,67 @@ def get_match_value(str1, str2, match=1, mismatch=-1, gap=-2):
             score += mismatch
     return score
 
-# def calculate_both():
-#     seq1 = sequence1.get()
-#     seq2 = sequence2.get()
-#     if seq1 == "":
-#         print("Sequence 1 is empty!") # better to have a pop window
-#         return
-#     if seq2 == "":
-#         print("Sequence 2 is empty!") # better to have a pop window
-#         return
+def calculate_both():
+    seq1 = sequence1.get()
+    seq2 = sequence2.get()
+    match_value = int(match.get())
+    mismatch_value = int(mismatch.get())
+    gap_value = int(gap.get())
+    if seq1 == "":
+        print("Sequence 1 is empty!") # better to have a pop window
+        return
+    if seq2 == "":
+        print("Sequence 2 is empty!") # better to have a pop window
+        return
     # here should add an error check for "A","C","G","T" if other character appears, should report error.
+    str1, str2, score_matrix, trace_matrix = global_alignment(seq1, seq2, match=match_value,mismatch=mismatch_value, gap=gap_value)
+    str3, str4, score_matrix2, trace_matrix2, max_score ,max_position = local_alignment(seq1, seq2, match=match_value, mismatch=mismatch_value, gap=gap_value)
+    global_match_value = get_match_value(str1, str2, match=match_value, mismatch=mismatch_value, gap=gap_value)
+    local_match_value = get_match_value(str3, str4, match=match_value, mismatch=mismatch_value, gap=gap_value)
+    display_results(seq1, seq2, str1, str2, str3, str4, match_value, mismatch_value, gap_value, max_score ,max_position, global_match_value, local_match_value, score_matrix)
+def display_results(seq1, seq2, str1, str2, str3, str4, match_value, mismatch_value, gap_value, max_score ,max_position, global_match_value, local_match_value, score_matrix):
+    result_window = tk.Toplevel()
+    result_window.title("Alignment Results")
+    result_window.geometry("800x600")
 
+    text = tk.Text(result_window, wrap = 'word', font = ("Helvetica", 10))
+    text.pack(expand = 1, fill = 'both')
+
+    text.insert(tk.END, f"Two Sequences: \n{seq1}\n{seq2}\n\n")
+    text.insert(tk.END, f"Parameters:\nMatch Value: {match_value}\nMismatch Value: {mismatch_value}\nGap Value: {gap_value}\n\n")
+    text.insert(tk.END, "Score Matrix:\n")
+    text.insert(tk.END, np.array2string(score_matrix, separator = ', ') + "\n\n")
+    text.insert(tk.END, "Global Alignment Result:\n")
+    text.insert(tk.END, f"{str1}\n{str2}\n\n")
+    text.insert(tk.END, f"Final Match Value: {global_match_value}\n\n")
+    text.insert(tk.END, "Local Alignment:\n")
+    text.insert(tk.END, f"{str3}\n{str4}\n")
+    text.insert(tk.END, f"Max Score: {max_score}\nMax Position: {max_position}\n\n")
+    text.insert(tk.END, f"Final Match Value: {local_match_value}\n\n")
 
 if __name__ == "__main__":
-    # window = tk.Tk()
-    # window.title("Sequence Alignment")
-    # window.geometry("600x400")
-    # tk.Label(window, text="Sequence 1:", font=("NORMAL", 25)).grid(row=0, column=0)
-    # tk.Label(window, text="Sequence 2:", font=("NORMAL", 25)).grid(row =1, column=0)
-    # sequence1 = tk.Entry(window)
-    # sequence2 = tk.Entry(window)
-    # sequence1.grid(row=0, column=1)
-    # sequence2.grid(row=1, column=1)
-    #
-    # submit_button = tk.Button(window,text="submit",font=("NORMAL", 25),command=calculate_both)
-    # submit_button.grid(row=2, column=0)
-    # window.mainloop()
+    window = tk.Tk()
+    window.title("Sequence Alignment")
+    window.geometry("300x250")
+    tk.Label(window, text="Sequence 1:", font=("NORMAL", 25)).grid(row=0, column=0)
+    tk.Label(window, text="Sequence 2:", font=("NORMAL", 25)).grid(row=1, column=0)
+    tk.Label(window, text="Match Value:", font =("NORMAL", 15)).grid(row=2, column=0)
+    tk.Label(window, text="Mismatch Value:", font =("NORMAL", 15)).grid(row=3, column=0)
+    tk.Label(window, text="Gap Value:", font =("NORMAL", 15)).grid(row=4, column=0)
+    sequence1 = tk.Entry(window)
+    sequence2 = tk.Entry(window)
+    match = tk.Entry(window)
+    mismatch = tk.Entry(window)
+    gap = tk.Entry(window)
+    sequence1.grid(row=0, column=1)
+    sequence2.grid(row=1, column=1)
+    match.grid(row = 2, column = 1)
+    mismatch.grid(row = 3, column = 1)
+    gap.grid(row = 4, column = 1)
+    match.insert(0,"1")
+    mismatch.insert(0, "-1")
+    gap.insert(0, "-2")
 
-    str1, str2, score_matrix, trace_matrix = global_alignment("AATCG", "AACGC", match=1, mismatch=-1, gap=0)
-    str3, str4, score_matrix2, trace_matrix2, max_score ,max_position = local_alignment("AATCG", "AACGC", match=1, mismatch=-1, gap=0)
-    print(score_matrix)
-    print(get_match_value(str1, str2, match=1, mismatch=-1, gap=0))
-    print(str1)
-    print(str2)
-    print()
-    print(score_matrix2)
-    print(get_match_value(str3, str4, match=1, mismatch=-1, gap=0))
-    print(str3)
-    print(str4)
+    submit_button = tk.Button(window,text="submit",font=("NORMAL", 25),command=calculate_both)
+    submit_button.grid(row=5, column=0)
+    window.mainloop()
