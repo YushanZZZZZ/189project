@@ -197,7 +197,7 @@ if __name__ == "__main__":
     gap.grid(row = 4, column = 1)
     match.insert(0,"1")
     mismatch.insert(0, "-1")
-    gap.insert(0, "-2")
+    gap.insert(0, "0")
 
     submit_button = tk.Button(window,text="submit",font=("NORMAL", 25),command=calculate_both)
     submit_button.grid(row=5, column=0)
