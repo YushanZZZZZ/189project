@@ -44,23 +44,19 @@ def global_alignment(seq1, seq2, match=1, mismatch=-1, gap=-2):
     trace_i = length1
     trace_j = length2
     while trace_i > 0 and trace_j > 0:
-        current_score = score_matrix[trace_i][trace_j]
-        diagonal_score = score_matrix[trace_i-1][trace_j-1]
-        vertical_score = score_matrix[trace_i-1][trace_j]
-        horizontal_score = score_matrix[trace_i][trace_j-1]
-        if (diagonal_score == current_score - mismatch) or (diagonal_score == current_score - match): # if the current value is coming from the diagonal value
-            inverse_str1 += seq1[trace_i-1]
-            inverse_str2 += seq2[trace_j-1]
+        if trace_matrix[trace_i][trace_j] == 'Diagonal':
+            inverse_str1 += seq1[trace_i - 1]
+            inverse_str2 += seq2[trace_j - 1]
             trace_i -= 1
             trace_j -= 1
-        elif vertical_score == current_score - gap: # if the current value is coming from vertical value
-            inverse_str1 += "-"
-            inverse_str2 += seq2[trace_j-1]
-            trace_j -= 1
-        elif horizontal_score == current_score - gap: # if the current value is coming from vertical value
-            inverse_str1 += seq1[trace_i-1]
-            inverse_str2 += "-"
+        elif trace_matrix[trace_i][trace_j] == 'Up':
+            inverse_str1 += seq1[trace_i - 1]
+            inverse_str2 += '-'
             trace_i -= 1
+        elif trace_matrix[trace_i][trace_j] == 'Left':
+            inverse_str1 += '-'
+            inverse_str2 += seq1[trace_j - 1]
+            trace_j -= 1
     while trace_i > 0:  # handling the situations when one of the trace value is 0 while other is not.
         inverse_str1 += seq1[trace_i-1]
         inverse_str2 += "-"
