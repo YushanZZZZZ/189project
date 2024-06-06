@@ -85,11 +85,9 @@ def local_alignment(seq1, seq2, match=1, mismatch=-1, gap=-2):
             diagonal_score = score_matrix[i - 1][j - 1] + (match if seq1[i - 1] == seq2[j - 1] else mismatch)
             vertical_score = score_matrix[i - 1][j] + gap
             horizontal_score = score_matrix[i][j - 1] + gap
-            max_score = max(0, diagonal_score, vertical_score,horizontal_score)  # Local alignment scores can't be negative
+            max_score = max(diagonal_score, vertical_score,horizontal_score)  # Local alignment scores can't be negative
             score_matrix[i][j] = max_score
-            if max_score == 0:
-                trace_matrix[i][j] = "None"
-            elif max_score == diagonal_score:
+            if max_score == diagonal_score:
                 trace_matrix[i][j] = "Diagonal"
             elif max_score == vertical_score:
                 trace_matrix[i][j] = "Up"
@@ -100,7 +98,7 @@ def local_alignment(seq1, seq2, match=1, mismatch=-1, gap=-2):
     max_position = (0, 0)
     for i in range(1, length1+1):
         for j in range(1, length2+1):
-            if score_matrix[i][j] > max_score:
+            if score_matrix[i][j] >= max_score:
                 max_score = score_matrix[i][j]
                 max_position = (i, j)
 
@@ -108,7 +106,7 @@ def local_alignment(seq1, seq2, match=1, mismatch=-1, gap=-2):
     inverse_str1 = ""
     inverse_str2 = ""
     trace_i, trace_j = max_position
-    while score_matrix[trace_i][trace_j] != 0:
+    while score_matrix[trace_i][trace_j] != 0 :
         if trace_matrix[trace_i][trace_j] == "Diagonal":
             inverse_str1 += seq1[trace_i - 1]
             inverse_str2 += seq2[trace_j - 1]
@@ -165,9 +163,15 @@ if __name__ == "__main__":
     # submit_button = tk.Button(window,text="submit",font=("NORMAL", 25),command=calculate_both)
     # submit_button.grid(row=2, column=0)
     # window.mainloop()
-    # global_alignment("ATCGT","TGGTG")
-    str1, str2, score_matrix, trace_matrix = global_alignment("ATCGT","TGGTG")
-    # str1, str2, score_matrix, trace_matrix, max_score ,max_position = local_alignment("ATCGT","TGGTG")
+
+    str1, str2, score_matrix, trace_matrix = global_alignment("AATCG", "AACGC", match=1, mismatch=-1, gap=0)
+    str3, str4, score_matrix2, trace_matrix2, max_score ,max_position = local_alignment("AATCG", "AACGC", match=1, mismatch=-1, gap=0)
+    print(score_matrix)
+    print(get_match_value(str1, str2, match=1, mismatch=-1, gap=0))
     print(str1)
     print(str2)
-    print(get_match_value(str1,str2))
+    print()
+    print(score_matrix2)
+    print(get_match_value(str3, str4, match=1, mismatch=-1, gap=0))
+    print(str3)
+    print(str4)
